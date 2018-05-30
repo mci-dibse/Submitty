@@ -24,7 +24,9 @@ use app\models\User;
  *
  * TODO: remove all of the duplicate functionality from ElectronicGraderController
  *
- * All actions required POST verb (TODO)
+ * TODO: should there be aggregate UPDATE requests to support things like reordering?
+ *
+ * All actions required POST verb (TODO, probably should be other verbs)
  *
  * All actions may return a 401 UNAUTHORIZED if the user is not authorized
  *  to perform the specified action.
@@ -318,13 +320,15 @@ class ElectronicRubricController extends AbstractController {
      *
      * Expected $_POST format:
      *  'gradeable_id'  => The gradeable id
-     *  'component_id'  => The component id
      *  'comp0_id'      => The first component's id
      *  'comp1_id'      => The second component's id
      *
      * Response format (json): 201 ACCEPTED, 404 NOT FOUND
      */
     private function reorderComponents() {
+        if(!$this->assertAdmin()) {
+            return $this->unauthorized();
+        }
 
     }
 }
