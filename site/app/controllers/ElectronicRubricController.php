@@ -120,8 +120,7 @@ class ElectronicRubricController extends AbstractController {
      *  'points'        => The mark's point value
      *  'publish'       => If the mark should be published
      *
-     * Response format (json):
-     *  'status'        => 201 CREATED, 409 CONFLICT
+     * Response format (json): 201 CREATED, 409 CONFLICT
      *  'id'            => mark's id
      */
     private function createMark() {
@@ -160,8 +159,7 @@ class ElectronicRubricController extends AbstractController {
      *  'gradeable_id'  => The gradeable id
      *  'component_id'  => The component id (optional)
      *
-     * Response format (json):
-     *  'status'        => 200 OK, 404 NOT FOUND
+     * Response format (json): 200 OK, 404 NOT FOUND
      *  'marks': [
      *      foreach mark in component:
      *          {
@@ -186,8 +184,7 @@ class ElectronicRubricController extends AbstractController {
      *  'note'          => The mark's note
      *  'points'        => The mark's point value
      *
-     * Response format (json):
-     *  'status'        => 201 ACCEPTED, 404 NOT FOUND
+     * Response format (json): ACCEPTED, 404 NOT FOUND
      */
     private function updateMark() {
 
@@ -202,8 +199,7 @@ class ElectronicRubricController extends AbstractController {
      *  'component_id'  => The component id
      *  'mark_id'       => The mark's id
      *
-     * Response format (json):
-     *  'status'        => 204 NO CONTENT, 404 NOT FOUND, 403 FORBIDDEN
+     * Response format (json): 204 NO CONTENT, 404 NOT FOUND, 403 FORBIDDEN
      */
     private function deleteMark() {
 
@@ -218,8 +214,7 @@ class ElectronicRubricController extends AbstractController {
      *  'mark0_id'      => The first mark's id
      *  'mark1_id'      => The second mark's id
      *
-     * Response format (json):
-     *  'status'        => 200 OK, 404 NOT FOUND
+     * Response format (json): 201 ACCEPTED, 404 NOT FOUND
      */
     private function reorderMarks() {
 
@@ -239,8 +234,7 @@ class ElectronicRubricController extends AbstractController {
      *  'penalty'       => The max penalty points possible
      *  'count_up'      => 0 to count down, otherwise count up
      *
-     * Response format (json):
-     *  'status'        => 201 CREATED, 409 CONFLICT
+     * Response format (json): 201 CREATED, 409 CONFLICT
      *  'id'            => component's id
      */
     private function createComponent() {
@@ -257,8 +251,7 @@ class ElectronicRubricController extends AbstractController {
      *  'gradeable_id'  => The gradeable id
      *  'component_id'  => The component id
      *
-     * Response format (json):
-     *  'status'        => 200 OK, 404 NOT FOUND
+     * Response format (json): 200 OK, 404 NOT FOUND
      *  'components': [
      *      foreach component in gradeable:
      *          {
@@ -293,8 +286,7 @@ class ElectronicRubricController extends AbstractController {
      *  'penalty'       => The max penalty points possible
      *  'count_up'      => 0 to count down, otherwise count up
      *
-     * Response format (json):
-     *  'status'        => 201 ACCEPTED, 404 NOT FOUND
+     * Response format (json): 201 ACCEPTED, 404 NOT FOUND
      *
      */
     private function updateComponent() {
@@ -312,8 +304,7 @@ class ElectronicRubricController extends AbstractController {
      *  'gradeable_id'  => The gradeable id
      *  'component_id'  => The component id
      *
-     * Response format (json):
-     *  'status'        => 204 NO CONTENT, 404 NOT FOUND, 403 FORBIDDEN
+     * Response format (json): 204 NO CONTENT, 404 NOT FOUND, 403 FORBIDDEN
      */
     private function deleteComponent() {
         if(!$this->assertAdmin()) {
@@ -331,8 +322,7 @@ class ElectronicRubricController extends AbstractController {
      *  'comp0_id'      => The first component's id
      *  'comp1_id'      => The second component's id
      *
-     * Response format (json):
-     *  'status'        => 200 OK, 404 NOT FOUND
+     * Response format (json): 201 ACCEPTED, 404 NOT FOUND
      */
     private function reorderComponents() {
 
