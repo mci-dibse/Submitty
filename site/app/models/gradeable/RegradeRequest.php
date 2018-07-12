@@ -89,7 +89,7 @@ class RegradeRequest extends AbstractModel {
 
     /**
      * Sets the TODO:
-     * @param $timestamp
+     * @param \DateTime|string $timestamp
      */
     public function setTimestamp($timestamp) {
         if ($timestamp === null) {
