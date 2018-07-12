@@ -24,6 +24,7 @@ use app\models\User;
  * @method int getId()
  * @method \DateTime|null getUserViewedDate()
  * @method array[] getGradedComponents()
+ * @method RegradeRequest|null getRegradeRequest()
  */
 class TaGradedGradeable extends AbstractModel {
     /** @property @var GradedGradeable A reference to the graded gradeable this Ta grade belongs to */
@@ -38,6 +39,8 @@ class TaGradedGradeable extends AbstractModel {
     protected $graded_components = [];
     /** @property @var GradedComponent[] The components that have been marked for deletion */
     private $deleted_graded_components = [];
+    /** @property @var RegradeRequest|null The regrade request for this graded gradeable */
+    protected $regrade_request = null;
 
 
     /**
@@ -410,6 +413,23 @@ class TaGradedGradeable extends AbstractModel {
         $this->modified = true;
     }
 
+    /**
+     * Gets if this grade has a regrade attached to it
+     * @return bool
+     */
+    public function hasRegradeRequest() {
+        return $this->regrade_request !== null;
+    }
+
+    /**
+     * Sets the regrade request, only called from db methods
+     * @param RegradeRequest $regrade_request
+     * @internal
+     */
+    public function setRegradeRequestFromDatabase(RegradeRequest $regrade_request) {
+        $this->regrade_request = $regrade_request;
+    }
+
     /* Intentionally Unimplemented accessor methods */
 
     /** @internal */
@@ -420,5 +440,10 @@ class TaGradedGradeable extends AbstractModel {
     /** @internal */
     public function setGradedComponents(array $graded_components) {
         throw new \BadFunctionCallException('Cannot set graded components for grade.  Use getOrCreateGradedComponent instead');
+    }
+
+    /** @internal */
+    public function setRegradeRequest(RegradeRequest $regrade_request) {
+        throw new \BadFunctionCallException('Cannot set regrade request');
     }
 }

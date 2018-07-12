@@ -13,6 +13,7 @@ use app\models\gradeable\GradedComponent;
 use app\models\gradeable\GradedGradeable;
 use app\models\gradeable\AutogradingVersion;
 use app\models\gradeable\Mark;
+use app\models\gradeable\RegradeRequest;
 use app\models\gradeable\Submitter;
 use app\models\gradeable\TaGradedGradeable;
 use app\models\GradeableComponent;
@@ -1083,6 +1084,8 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
               gd.gd_id AS id,
               gd.gd_overall_comment AS overall_comment,
               gd.gd_user_viewed_date AS user_viewed_date,
+              gd.regrade_timestamp,
+              gd.regrade_status,
 
               /* Aggregate Gradeable Component Data */
               gcd.array_comp_id,
@@ -1186,8 +1189,16 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
                          
               /* Join manual grading data */
               LEFT JOIN (
-                SELECT *
-                FROM gradeable_data
+                SELECT 
+                  in_gd.*,
+                  rr.timestamp as regrade_timestamp,
+                  rr.status as regrade_status
+                FROM gradeable_data in_gd
+                /* Join regrade request status data */
+                LEFT JOIN (
+                  SELECT *
+                  FROM regrade_requests
+                ) AS rr ON rr.gradeable_id=in_gd.g_id AND rr.student_id=in_gd.gd_user_id
               ) AS gd ON gd.g_id=g.g_id AND (gd.gd_user_id=u.user_id OR gd.gd_team_id=team.team_id)
 
               /* Join aggregate gradeable component data */
@@ -1300,6 +1311,21 @@ SELECT round((AVG(g_score) + AVG(autograding)),2) AS avg_score, round(stddev_pop
             // This will be false if there is no manual grade yet
             if (isset($row['id'])) {
                 $ta_graded_gradeable = new TaGradedGradeable($this->core, $graded_gradeable, $row);
+
+                // Create the regrade request if one exists
+                if (isset($row['regrade_status'])) {
+                    $regrade_request_properties = [
+                        'status',
+                        'timestamp'
+                    ];
+                    $regrade_request_data = [];
+                    foreach ($regrade_request_properties as $property) {
+                        $regrade_request_data[$property] = $row['regrade_' . $property];
+                    }
+                    $ta_graded_gradeable->setRegradeRequestFromDatabase(
+                        new RegradeRequest($this->core, $ta_graded_gradeable, $regrade_request_data));
+                }
+
                 $graded_gradeable->setTaGradedGradeable($ta_graded_gradeable);
             }
 
