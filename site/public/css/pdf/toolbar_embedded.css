@@ -54,6 +54,7 @@
     background-color: #edf6f6;
     width: 37px;
     border: 5px solid #0088bf;
+    box-sizing: content-box;
 }
 
 #pdf_annotation_bar {
