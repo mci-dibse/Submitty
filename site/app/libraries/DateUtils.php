@@ -92,7 +92,9 @@ class DateUtils {
             return $date;
         } else if (gettype($date) === 'string') {
             try {
-                return new \DateTime($date, $time_zone);
+                $date_time = new \DateTime($date, $time_zone);
+                $date_time->setTimezone($time_zone);
+                return $date_time;
             } catch (\Exception $e) {
                 throw new \InvalidArgumentException('Invalid DateTime Format');
             }

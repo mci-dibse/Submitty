@@ -125,7 +125,6 @@
 		second_slider: null,
 		millisec_slider: null,
 		microsec_slider: null,
-		timezone_select: null,
 		maxTime: null,
 		minTime: null,
 		hour: 0,
@@ -148,7 +147,6 @@
 		formattedDate: '',
 		formattedTime: '',
 		formattedDateTime: '',
-		timezoneList: null,
 		units: ['hour', 'minute', 'second', 'millisec', 'microsec'],
 		support: {},
 		control: null,
@@ -242,24 +240,6 @@
 				tp_inst.control = tp_inst._defaults.controlType;
 			}
 
-			// prep the timezone options
-			var timezoneList = [-720, -660, -600, -570, -540, -480, -420, -360, -300, -270, -240, -210, -180, -120, -60,
-					0, 60, 120, 180, 210, 240, 270, 300, 330, 345, 360, 390, 420, 480, 525, 540, 570, 600, 630, 660, 690, 720, 765, 780, 840];
-			if (tp_inst._defaults.timezoneList !== null) {
-				timezoneList = tp_inst._defaults.timezoneList;
-			}
-			var tzl = timezoneList.length, tzi = 0, tzv = null;
-			if (tzl > 0 && typeof timezoneList[0] !== 'object') {
-				for (; tzi < tzl; tzi++) {
-					tzv = timezoneList[tzi];
-					timezoneList[tzi] = { value: tzv, label: $.timepicker.timezoneOffsetString(tzv, tp_inst.support.iso8601) };
-				}
-			}
-			tp_inst._defaults.timezoneList = timezoneList;
-
-			// set the default units
-			tp_inst.timezone = tp_inst._defaults.timezone !== null ? $.timepicker.timezoneOffsetNumber(tp_inst._defaults.timezone) :
-							((new Date()).getTimezoneOffset() * -1);
 			tp_inst.hour = tp_inst._defaults.hour < tp_inst._defaults.hourMin ? tp_inst._defaults.hourMin :
 							tp_inst._defaults.hour > tp_inst._defaults.hourMax ? tp_inst._defaults.hourMax : tp_inst._defaults.hour;
 			tp_inst.minute = tp_inst._defaults.minute < tp_inst._defaults.minuteMin ? tp_inst._defaults.minuteMin :
@@ -425,11 +405,6 @@
 					}
 					html += '</dd>';
 				}
-				
-				// Timezone
-				var showTz = o.showTimezone !== null ? o.showTimezone : this.support.timezone;
-				html += '<dt class="ui_tpicker_timezone_label' + (showTz ? '' : noDisplay) + '">' + o.timezoneText + '</dt>';
-				html += '<dd class="ui_tpicker_timezone' + (showTz ? '' : noDisplay) + '"></dd>';
 
 				// Create the elements from string
 				html += '</dl></div>';
@@ -488,33 +463,6 @@
 							});
 					} // end if grid > 0
 				} // end for loop
-
-				// Add timezone options
-				this.timezone_select = $tp.find('.ui_tpicker_timezone').append('<select></select>').find("select");
-				$.fn.append.apply(this.timezone_select,
-				$.map(o.timezoneList, function (val, idx) {
-					return $("<option />").val(typeof val === "object" ? val.value : val).text(typeof val === "object" ? val.label : val);
-				}));
-				if (typeof(this.timezone) !== "undefined" && this.timezone !== null && this.timezone !== "") {
-					var local_timezone = (new Date(this.inst.selectedYear, this.inst.selectedMonth, this.inst.selectedDay, 12)).getTimezoneOffset() * -1;
-					if (local_timezone === this.timezone) {
-						selectLocalTimezone(tp_inst);
-					} else {
-						this.timezone_select.val(this.timezone);
-					}
-				} else {
-					if (typeof(this.hour) !== "undefined" && this.hour !== null && this.hour !== "") {
-						this.timezone_select.val(o.timezone);
-					} else {
-						selectLocalTimezone(tp_inst);
-					}
-				}
-				this.timezone_select.change(function () {
-					tp_inst._onTimeChange();
-					tp_inst._onSelectHandler();
-					tp_inst._afterInject();
-				});
-				// End timezone options
 				
 				// inject timepicker into datepicker
 				var $buttonPanel = $dp.find('.ui-datepicker-buttonpane');
@@ -771,7 +719,6 @@
 				second = (this.second_slider) ? this.control.value(this, this.second_slider, 'second') : false,
 				millisec = (this.millisec_slider) ? this.control.value(this, this.millisec_slider, 'millisec') : false,
 				microsec = (this.microsec_slider) ? this.control.value(this, this.microsec_slider, 'microsec') : false,
-				timezone = (this.timezone_select) ? this.timezone_select.val() : false,
 				o = this._defaults,
 				pickerTimeFormat = o.pickerTimeFormat || o.timeFormat,
 				pickerTimeSuffix = o.pickerTimeSuffix || o.timeSuffix;
@@ -791,9 +738,6 @@
 			if (typeof(microsec) === 'object') {
 				microsec = false;
 			}
-			if (typeof(timezone) === 'object') {
-				timezone = false;
-			}
 
 			if (hour !== false) {
 				hour = parseInt(hour, 10);
@@ -810,9 +754,6 @@
 			if (microsec !== false) {
 				microsec = parseInt(microsec, 10);
 			}
-			if (timezone !== false) {
-				timezone = timezone.toString();
-			}
 
 			var ampm = o[hour < 12 ? 'amNames' : 'pmNames'][0];
 
@@ -824,8 +765,7 @@
 						second !== parseInt(this.second,10) || 
 						millisec !== parseInt(this.millisec,10) || 
 						microsec !== parseInt(this.microsec,10) || 
-						(this.ampm.length > 0 && (hour < 12) !== ($.inArray(this.ampm.toUpperCase(), this.amNames) !== -1)) || 
-						(this.timezone !== null && timezone !== this.timezone.toString()) // could be numeric or "EST" format, so use toString()
+						(this.ampm.length > 0 && (hour < 12) !== ($.inArray(this.ampm.toUpperCase(), this.amNames) !== -1))
 					);
 
 			if (hasChanged) {
@@ -844,9 +784,6 @@
 				}
 				if (microsec !== false) {
 					this.microsec = microsec;
-				}
-				if (timezone !== false) {
-					this.timezone = timezone;
 				}
 
 				if (!this.inst) {
@@ -1549,7 +1486,6 @@
 		var inst = this._getInst($(id)[0]),
 			$dp = inst.dpDiv;
 		var tp_inst = this._get(inst, 'timepicker');
-		selectLocalTimezone(tp_inst);
 		var now = new Date();
 		this._setTime(inst, now);
 		this._setDate(inst, now);
@@ -1992,16 +1928,6 @@
 	};
 
 	/*
-	* Internal function to set timezone_select to the local timezone
-	*/
-	var selectLocalTimezone = function (tp_inst, date) {
-		if (tp_inst && tp_inst.timezone_select) {
-			var now = date || new Date();
-			tp_inst.timezone_select.val(-now.getTimezoneOffset());
-		}
-	};
-
-	/*
 	* Create a Singleton Instance
 	*/
 	$.timepicker = new Timepicker();
@@ -2218,7 +2144,6 @@
 		_isEmptyObject: isEmptyObject,
 		_convert24to12: convert24to12,
 		_detectSupport: detectSupport,
-		_selectLocalTimezone: selectLocalTimezone,
 		_computeEffectiveSetting: computeEffectiveSetting,
 		_splitDateTime: splitDateTime,
 		_parseDateTimeInternal: parseDateTimeInternal
