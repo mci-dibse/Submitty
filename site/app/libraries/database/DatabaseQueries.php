@@ -2162,12 +2162,14 @@ FROM courses_users u
 INNER JOIN courses c ON u.course=c.course AND u.semester=c.semester
 WHERE u.user_id=? AND c.status=1
 ORDER BY u.user_group ASC,
-         CASE WHEN SUBSTRING(u.semester, 2, 2) ~ '\\d+' THEN SUBSTRING(u.semester, 2, 2)::INT
+         CASE WHEN SUBSTRING(u.semester, 2, 4) ~ '^\\d+$' THEN SUBSTRING(u.semester, 2, 4)::INT
+              WHEN SUBSTRING(u.semester, 3, 4) ~ '^\\d+$' THEN SUBSTRING(u.semester, 3, 4)::INT
               ELSE 0
          END DESC,
-         CASE WHEN SUBSTRING(u.semester, 1, 1) = 's' THEN 2
-              WHEN SUBSTRING(u.semester, 1, 1) = 'u' THEN 3
-              WHEN SUBSTRING(u.semester, 1, 1) = 'f' THEN 4
+         CASE WHEN UPPER(SUBSTRING(u.semester, 1, 1)) = 'S' THEN 2
+              WHEN UPPER(SUBSTRING(u.semester, 1, 1)) = 'U' THEN 3
+              WHEN UPPER(SUBSTRING(u.semester, 1, 1)) = 'F' THEN 4
+              WHEN UPPER(SUBSTRING(u.semester, 1, 1)) = 'W' THEN 4
               ELSE 1
          END DESC,
          u.course ASC", array($user_id));
