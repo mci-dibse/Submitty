@@ -277,7 +277,7 @@ replace_fillin_variables ${course_dir}/config/config.ini
 
 
 echo -e "Creating database ${DATABASE_NAME}\n"
-PGPASSWORD=${DATABASE_PASS} psql -h ${DATABASE_HOST} -U ${DATABASE_USER} -d postgres -c "CREATE DATABASE ${DATABASE_NAME}"
+PGPASSWORD=${DATABASE_PASS} psql -h ${DATABASE_HOST} -U ${DATABASE_USER} -d postgres -c "CREATE DATABASE \"${DATABASE_NAME}\""
 if [[ $? -ne "0" ]] ; then
     echo "ERROR: Failed to create database ${DATABASE_NAME}"
     exit
